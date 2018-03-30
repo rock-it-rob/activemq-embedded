@@ -1,0 +1,9 @@
+# IntelliJ files
+*.iml
+.idea/
+
+# Java files
+*.class
+
+# Maven files
+target/
