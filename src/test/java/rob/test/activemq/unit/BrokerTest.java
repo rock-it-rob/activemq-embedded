@@ -2,12 +2,20 @@ package rob.test.activemq.unit;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.jms.annotation.EnableJms;
+import org.springframework.jms.annotation.JmsListener;
+import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
+import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.connection.SingleConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.messaging.Message;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import rob.test.activemq.BrokerConfig;
@@ -22,9 +30,12 @@ import javax.jms.Queue;
 @ContextConfiguration
 public class BrokerTest
 {
+    protected final static Logger log = LoggerFactory.getLogger(BrokerTest.class);
+
     @Configuration
     @Import(BrokerConfig.class)
-    private static class Config
+    @EnableJms
+    static class Config
     {
         @Autowired
         @Bean
@@ -32,6 +43,21 @@ public class BrokerTest
         {
             SingleConnectionFactory singleConnectionFactory = new SingleConnectionFactory(connectionFactory);
             return new JmsTemplate(singleConnectionFactory);
+        }
+
+        @Autowired
+        @Bean
+        public JmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory)
+        {
+            DefaultJmsListenerContainerFactory cf = new DefaultJmsListenerContainerFactory();
+            cf.setConnectionFactory(connectionFactory);
+            return cf;
+        }
+
+        @JmsListener(destination = "${queue.name}")
+        public void jmsListener(Message<String> message)
+        {
+            log.info("Message received: " + message.getPayload());
         }
     }
 
