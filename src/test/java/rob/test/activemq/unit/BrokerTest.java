@@ -10,8 +10,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.annotation.JmsListener;
-import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
-import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.connection.SingleConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.messaging.Message;
@@ -42,15 +40,6 @@ public class BrokerTest
         {
             SingleConnectionFactory singleConnectionFactory = new SingleConnectionFactory(connectionFactory);
             return new JmsTemplate(singleConnectionFactory);
-        }
-
-        @Autowired
-        @Bean
-        public JmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory)
-        {
-            DefaultJmsListenerContainerFactory cf = new DefaultJmsListenerContainerFactory();
-            cf.setConnectionFactory(connectionFactory);
-            return cf;
         }
 
         @JmsListener(destination = "${queue.name}")
