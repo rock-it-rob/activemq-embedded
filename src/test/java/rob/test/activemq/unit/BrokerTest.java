@@ -74,7 +74,7 @@ public class BrokerTest
     {
         jmsTemplate.send(
             queue,
-            (session) -> session.createTextMessage("testing 1 2 3")
+            (session) -> session.createTextMessage("testing sample message")
         );
     }
 }
