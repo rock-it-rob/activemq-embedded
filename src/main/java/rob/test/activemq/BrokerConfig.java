@@ -11,7 +11,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
-import org.springframework.jms.connection.SingleConnectionFactory;
+import org.springframework.jms.connection.CachingConnectionFactory;
+import org.springframework.jms.core.JmsTemplate;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.Queue;
@@ -42,7 +43,20 @@ public class BrokerConfig
     public ConnectionFactory connectionFactory()
     {
         log.debug("Creating new connection factory at url: " + url);
-        return new SingleConnectionFactory(new ActiveMQConnectionFactory(url));
+        return new CachingConnectionFactory(new ActiveMQConnectionFactory(url));
+    }
+
+    /**
+     * Default message producer.
+     *
+     * @param connectionFactory ConnectionFactory
+     * @return JmsTemplate
+     */
+    @Autowired
+    @Bean
+    public JmsTemplate jmsTemplate(ConnectionFactory connectionFactory)
+    {
+        return new JmsTemplate(connectionFactory);
     }
 
     /**
@@ -69,6 +83,8 @@ public class BrokerConfig
     {
         DefaultJmsListenerContainerFactory cf = new DefaultJmsListenerContainerFactory();
         cf.setConnectionFactory(connectionFactory);
+        cf.setSessionTransacted(true);
+        cf.setConcurrency("3-10");
         return cf;
     }
 }
