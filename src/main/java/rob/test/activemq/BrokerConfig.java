@@ -1,6 +1,7 @@
 package rob.test.activemq;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,10 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.connection.CachingConnectionFactory;
+import org.springframework.jms.connection.SingleConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 
 import javax.jms.ConnectionFactory;
@@ -44,6 +47,7 @@ public class BrokerConfig
     {
         log.debug("Creating new connection factory at url: " + url);
         return new CachingConnectionFactory(new ActiveMQConnectionFactory(url));
+        //return new SingleConnectionFactory(new ActiveMQConnectionFactory(url));
     }
 
     /**
@@ -84,7 +88,7 @@ public class BrokerConfig
         DefaultJmsListenerContainerFactory cf = new DefaultJmsListenerContainerFactory();
         cf.setConnectionFactory(connectionFactory);
         cf.setSessionTransacted(true);
-        cf.setConcurrency("3-10");
+        //cf.setConcurrency("3-10");
         return cf;
     }
 }

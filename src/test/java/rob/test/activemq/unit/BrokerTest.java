@@ -1,5 +1,8 @@
 package rob.test.activemq.unit;
 
+import org.apache.activemq.broker.BrokerService;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -24,6 +27,24 @@ import javax.jms.Queue;
 @ContextConfiguration
 public class BrokerTest
 {
+    private static BrokerService brokerService;
+    private static final String BROKER_NAME = "localhost";
+
+    @BeforeClass
+    public static void beforeClass() throws Exception
+    {
+        brokerService = new BrokerService();
+        brokerService.setBrokerName(BROKER_NAME);
+        brokerService.start();
+    }
+
+    @AfterClass
+    public static void afterClass() throws Exception
+    {
+        Thread.sleep(2000);
+        brokerService.stop();
+    }
+
     protected final static Logger log = LoggerFactory.getLogger(BrokerTest.class);
 
     @Configuration
