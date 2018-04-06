@@ -1,54 +1,31 @@
 package rob.test.activemq;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.broker.BrokerService;
-import org.apache.activemq.command.ActiveMQQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.jms.annotation.EnableJms;
+import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
-import org.springframework.jms.connection.CachingConnectionFactory;
-import org.springframework.jms.connection.SingleConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.messaging.Message;
 
 import javax.jms.ConnectionFactory;
-import javax.jms.Queue;
 
 /**
- * Runs an embedded ActiveMQ broker.
+ * BrokerConfig is a spring configuration class that sets up the message
+ * producers and message consumers. Users of this class should provide, in the
+ * application context, a ConnectionFactory and a Queue.
  *
  * @author rob
  */
 @Configuration
-@PropertySource(name = "broker", value = "classpath:broker.properties")
+@EnableJms
 public class BrokerConfig
 {
     private static final Logger log = LoggerFactory.getLogger(BrokerConfig.class);
-
-    @Value("${broker.url}")
-    private String url;
-
-    @Value("${queue.name}")
-    private String queueName;
-
-    /**
-     * Default MQ connection factory.
-     *
-     * @return ConnectionFactory
-     */
-    @Bean
-    public ConnectionFactory connectionFactory()
-    {
-        log.debug("Creating new connection factory at url: " + url);
-        return new CachingConnectionFactory(new ActiveMQConnectionFactory(url));
-        //return new SingleConnectionFactory(new ActiveMQConnectionFactory(url));
-    }
 
     /**
      * Default message producer.
@@ -64,18 +41,6 @@ public class BrokerConfig
     }
 
     /**
-     * Default message queue.
-     *
-     * @return Queue
-     */
-    @Bean
-    public Queue queue()
-    {
-        log.debug("Creating new queue: " + queueName);
-        return new ActiveMQQueue(queueName);
-    }
-
-    /**
      * Default listener container factory
      *
      * @param connectionFactory autowired ConnectionFactory
@@ -88,7 +53,18 @@ public class BrokerConfig
         DefaultJmsListenerContainerFactory cf = new DefaultJmsListenerContainerFactory();
         cf.setConnectionFactory(connectionFactory);
         cf.setSessionTransacted(true);
-        //cf.setConcurrency("3-10");
+        cf.setConcurrency("3-10");
         return cf;
+    }
+
+    /**
+     * Message handler.
+     *
+     * @param message Message<String>
+     */
+    @JmsListener(destination = "${broker.queue}")
+    public void onMessage(Message<String> message)
+    {
+        log.info("Received message: " + message.getPayload());
     }
 }
