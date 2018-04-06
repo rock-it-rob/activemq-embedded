@@ -65,6 +65,6 @@ public class BrokerConfig
     @JmsListener(destination = "${broker.queue}")
     public void onMessage(Message<String> message)
     {
-        log.info("Received message: " + message.getPayload());
+        log.info("Received message 1: " + message.getPayload());
     }
 }
