@@ -22,6 +22,7 @@
         <property name="brokerName" value="${broker.name}"/>
         <property name="useJmx" value="false"/>
         <property name="persistent" value="false"/>
+        <property name="useShutdownHook" value="false"/>
     </bean>
 
     <bean id="activeMQConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory" depends-on="broker">
