@@ -6,7 +6,7 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
 >
 
-    <bean id="broker" class="org.apache.activemq.broker.BrokerService" destroy-method="stop">
+    <bean id="broker" class="org.apache.activemq.broker.BrokerService">
         <property name="brokerName" value="${broker.name}"/>
         <property name="useJmx" value="false"/>
         <property name="persistent" value="false"/>

@@ -22,7 +22,9 @@
 
     <bean id="messageListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
         <property name="connectionFactory" ref="connectionFactory"/>
+        <!--
         <property name="sessionTransacted" value="true"/>
+        -->
         <property name="destination" ref="messagePayloadQueue"/>
         <property name="messageListener" ref="messageListenerAdapter"/>
         <property name="errorHandler" ref="messageErrorHandler"/>

@@ -7,16 +7,23 @@ run as an embedded instance within the JVM.
 Files of interest:
 
 * **BrokerConfig**:
-This spring `@Configuration` class creates beans of `JmsListenerContainerFactory`
-and `JmsTemplate`. It also defines a message handler method annotated
-with `@JmsListener`.
+This spring `@Configuration` class creates the JMS beans and defines a 
+message handler method for the default queue annotated with `@JmsListener`.
 
-* **BrokerTest**:
-A JUnit test class that sends a message using the `JmsTemplate` bean.
+* **MessagePayload**:
+A POJO message type.
 
-* **broker-test-spring.xml**:
-A spring configuration xml that defines beans for an embedded ActiveMQ
-broker service, a connection factory, and a queue.
+* **MessagePayloadQueueListener**:
+A class that handles JMS messages received of type `MessagePayload`.
+ 
+
+* **DefaultQueueTest**:
+A JUnit test class that sends a `TextMessage` using a `JmsTemplate` to 
+the default queue.
+
+* **MessagePayloadTest**:
+A JUnit test class that creates an instance of `MessagePayload` and
+sends it to a test queue.
 
 ## Running the Application
 
@@ -24,21 +31,13 @@ The project is run by executing the maven test goal:
 
 `mvn test`
 
-The single JUnit test in `BrokerTest` will use the `JMSTemplate` bean
-to send a sample message and the listener method defined in `BrokerConfig`
-will print its contents out using logging.
-
 The result should look similar to the following:
 
 <pre>
--------------------------------------------------------
- T E S T S
--------------------------------------------------------
-Running rob.test.activemq.unit.BrokerTest
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.332 sec
-2019-05-31 08:12:25.972 [INFO] BrokerConfig: Received message: testing sample message
+2019-06-03 15:54:01.385 [INFO] BrokerConfig: Received message: testing sample message
+2019-06-03 15:54:01.627 [ERROR] MessageErrorHandler: Could not find type id property [classname] on message [ID:MTI-ATPLT12-65380-1559595240927-7:1:5:1:1] from destination [queue://messagePayloadQueue]
+2019-06-03 15:54:01.698 [INFO] MessagePayloadQueueListener: MessagePayload / Sent: 2019-06-03 03:54:01.621 Content: Sample rob.test.activemq.model.MessagePayload
+2019-06-03 15:54:07.397 [WARN] DefaultMessageListenerContainer: Setup of JMS message listener invoker failed for destination 'defaultQueue' - trying to recover. Cause: peer (vm://localhost#3) stopped.
 
-Results :
-
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+Process finished with exit code 0
 </pre>
