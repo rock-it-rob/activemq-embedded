@@ -2,17 +2,14 @@ package rob.test.activemq;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.annotation.JmsListener;
-import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
-import org.springframework.jms.config.JmsListenerContainerFactory;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.messaging.Message;
-
-import javax.jms.ConnectionFactory;
 
 /**
  * BrokerConfig is a spring configuration class that sets up the message
@@ -22,39 +19,20 @@ import javax.jms.ConnectionFactory;
  * @author rob
  */
 @Configuration
+@ImportResource(BrokerConfig.SPRING_XML)
+@PropertySource(BrokerConfig.PROPERTIES)
 @EnableJms
 public class BrokerConfig
 {
+    static final String SPRING_XML = "classpath:broker-spring.xml";
+    static final String PROPERTIES = "classpath:application.properties";
+
     private static final Logger log = LoggerFactory.getLogger(BrokerConfig.class);
 
-    /**
-     * Default message producer.
-     *
-     * @param connectionFactory ConnectionFactory
-     * @return JmsTemplate
-     */
-    @Autowired
     @Bean
-    public JmsTemplate jmsTemplate(ConnectionFactory connectionFactory)
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer()
     {
-        return new JmsTemplate(connectionFactory);
-    }
-
-    /**
-     * Default listener container factory
-     *
-     * @param connectionFactory autowired ConnectionFactory
-     * @return JmsListenerContainerFactory
-     */
-    @Autowired
-    @Bean
-    public JmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory)
-    {
-        DefaultJmsListenerContainerFactory cf = new DefaultJmsListenerContainerFactory();
-        cf.setConnectionFactory(connectionFactory);
-        cf.setSessionTransacted(true);
-        cf.setConcurrency("3-10");
-        return cf;
+        return new PropertySourcesPlaceholderConfigurer();
     }
 
     /**
@@ -62,7 +40,7 @@ public class BrokerConfig
      *
      * @param message Message<String>
      */
-    @JmsListener(destination = "${broker.queue}")
+    @JmsListener(destination = "${default.queue}")
     public void onMessage(Message<String> message)
     {
         log.info("Received message: " + message.getPayload());

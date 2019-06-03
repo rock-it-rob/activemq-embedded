@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+
+    <bean id="messagePayloadQueueListener" class="rob.test.activemq.listener.MessagePayloadQueueListener"/>
+
+    <bean id="mappingJackson2MessageConverter"
+          class="org.springframework.jms.support.converter.MappingJackson2MessageConverter">
+        <property name="typeIdPropertyName" value="classname"/>
+    </bean>
+
+    <bean id="messageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+        <property name="delegate" ref="messagePayloadQueueListener"/>
+        <property name="messageConverter" ref="mappingJackson2MessageConverter"/>
+    </bean>
+
+    <bean id="messageErrorHandler" class="rob.test.activemq.listener.MessageErrorHandler"/>
+
+    <bean id="messageListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="sessionTransacted" value="true"/>
+        <property name="destination" ref="messagePayloadQueue"/>
+        <property name="messageListener" ref="messageListenerAdapter"/>
+        <property name="errorHandler" ref="messageErrorHandler"/>
+    </bean>
+
+    <bean id="messagePayloadQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <property name="physicalName" value="${messagePayload.queue}"/>
+    </bean>
+
+    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="messageConverter" ref="mappingJackson2MessageConverter"/>
+    </bean>
+
+</beans>

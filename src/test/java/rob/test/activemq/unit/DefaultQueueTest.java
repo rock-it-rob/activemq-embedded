@@ -5,36 +5,46 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import rob.test.activemq.BrokerConfig;
 
+import javax.jms.ConnectionFactory;
 import javax.jms.Queue;
 
 /**
- * @author rob
+ * DefaultQueueTest tests sending plain text messages to the default message queue.
+ *
+ * @author Rob Benton
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
-public class BrokerTest
+public class DefaultQueueTest
 {
-    private final static Logger log = LoggerFactory.getLogger(BrokerTest.class);
+    private static final Logger log = LoggerFactory.getLogger(DefaultQueueTest.class);
 
     @Configuration
     @Import(BrokerConfig.class)
-    @ImportResource("classpath:broker-test-spring.xml")
     static class Config
     {
+        @Bean
+        @Autowired
+        public JmsTemplate jmsTemplate(ConnectionFactory connectionFactory)
+        {
+            return new JmsTemplate(connectionFactory);
+        }
     }
 
     @Autowired
     private JmsTemplate jmsTemplate;
 
     @Autowired
+    @Qualifier("defaultQueue")
     private Queue queue;
 
     /**

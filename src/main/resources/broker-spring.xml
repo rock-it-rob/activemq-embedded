@@ -2,21 +2,9 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:util="http://www.springframework.org/schema/util"
-       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="
-        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
 >
-
-    <context:property-placeholder properties-ref="properties"/>
-
-    <util:properties id="properties">
-        <prop key="broker.name">localhost</prop>
-        <prop key="broker.url">vm://localhost?create=false</prop>
-        <prop key="broker.queue">defaultQueue</prop>
-    </util:properties>
 
     <bean id="broker" class="org.apache.activemq.broker.BrokerService" destroy-method="stop">
         <property name="brokerName" value="${broker.name}"/>
@@ -33,8 +21,14 @@
         <property name="targetConnectionFactory" ref="activeMQConnectionFactory"/>
     </bean>
 
-    <bean id="queue" class="org.apache.activemq.command.ActiveMQQueue">
-        <property name="physicalName" value="${broker.queue}"/>
+    <bean id="defaultQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <property name="physicalName" value="${default.queue}"/>
+    </bean>
+
+    <bean id="jmsListenerContainerFactory" class="org.springframework.jms.config.DefaultJmsListenerContainerFactory">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="sessionTransacted" value="true"/>
+        <property name="concurrency" value="3-10"/>
     </bean>
 
 </beans>
