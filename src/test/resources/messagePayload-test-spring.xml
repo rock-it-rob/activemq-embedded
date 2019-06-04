@@ -18,16 +18,11 @@
         <property name="messageConverter" ref="mappingJackson2MessageConverter"/>
     </bean>
 
-    <bean id="messageErrorHandler" class="rob.test.activemq.listener.MessageErrorHandler"/>
-
     <bean id="messageListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
         <property name="connectionFactory" ref="connectionFactory"/>
-        <!--
-        <property name="sessionTransacted" value="true"/>
-        -->
         <property name="destination" ref="messagePayloadQueue"/>
         <property name="messageListener" ref="messageListenerAdapter"/>
-        <property name="errorHandler" ref="messageErrorHandler"/>
+        <property name="errorHandler" ref="messagePayloadQueueListener"/>
     </bean>
 
     <bean id="messagePayloadQueue" class="org.apache.activemq.command.ActiveMQQueue">
