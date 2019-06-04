@@ -1,9 +1,12 @@
 package rob.test.activemq.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class MessagePayload
+public class MessagePayload implements Serializable
 {
+    private static final long serialVersionUID = 1L;
+
     private Date sent;
     private String content;
 
