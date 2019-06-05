@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.ErrorHandler;
 import rob.test.activemq.model.MessagePayload;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 
 public class MessagePayloadQueueListener implements ErrorHandler
@@ -21,5 +23,9 @@ public class MessagePayloadQueueListener implements ErrorHandler
     public void handleError(Throwable t)
     {
         log.error("Problem handling message. Exception message is: " + t.getMessage());
+        final StringWriter sw = new StringWriter();
+        final PrintWriter pw = new PrintWriter(sw);
+        t.printStackTrace(pw);
+        log.error(sw.toString());
     }
 }
