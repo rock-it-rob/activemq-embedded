@@ -78,6 +78,13 @@ public class MessagePayloadResponseIT
     }
 
     @Test
+    public void sendWithNoReplyTo()
+    {
+        messagePayload.setContent("This message has no reply-to");
+        jmsTemplate.convertAndSend(messagePayloadResponseQueue, messagePayload);
+    }
+
+    @Test
     public void sendExpectingResponseButGettingNone() throws JMSException
     {
         messagePayload.setContent("Expecting response but won't get one.");

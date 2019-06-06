@@ -31,7 +31,9 @@
     <bean id="messagePayloadResponseListener" class="rob.test.activemq.listener.MessagePayloadResponseListener"/>
 
     <bean id="messagePayloadOptionalResponseListener"
-          class="rob.test.activemq.listener.MessagePayloadOptionalResponseListener"/>
+          class="rob.test.activemq.listener.MessagePayloadOptionalResponseListener">
+        <constructor-arg ref="mappingJackson2MessageConverter"/>
+    </bean>
 
     <bean id="messagePayloadListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
         <property name="delegate" ref="messagePayloadListener"/>
