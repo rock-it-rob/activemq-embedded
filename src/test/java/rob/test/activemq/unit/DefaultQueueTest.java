@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import rob.test.activemq.BrokerConfig;
 
@@ -24,9 +25,12 @@ import javax.jms.Queue;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
+@TestPropertySource(DefaultQueueTest.TEST_PROPERTIES)
 public class DefaultQueueTest
 {
     private static final Logger log = LoggerFactory.getLogger(DefaultQueueTest.class);
+
+    static final String TEST_PROPERTIES = "classpath:test.properties";
 
     @Configuration
     @Import(BrokerConfig.class)

@@ -69,4 +69,51 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.30.0</version>
+                <configuration>
+                    <containerNamePattern>%a-%i</containerNamePattern>
+                    <images>
+                        <image>
+                            <alias>activemq</alias>
+                            <name>rmohr/activemq:5.15.6-alpine</name>
+                            <run>
+                                <ports>
+                                    <port>61616:61616</port>
+                                    <port>8161:8161</port>
+                                </ports>
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <alias>activemq</alias>
+                                </image>
+                            </images>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.22.2</version>
+                <configuration>
+
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

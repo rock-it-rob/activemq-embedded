@@ -12,6 +12,7 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import rob.test.activemq.BrokerConfig;
 import rob.test.activemq.model.MessagePayload;
@@ -27,9 +28,12 @@ import java.util.Date;
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration
+@TestPropertySource(MessagePayloadTest.TEST_PROPERTIES)
 public class MessagePayloadTest
 {
     private static final Logger log = LoggerFactory.getLogger(MessagePayloadTest.class);
+
+    static final String TEST_PROPERTIES = "classpath:test.properties";
 
     @Configuration
     @Import(BrokerConfig.class)
