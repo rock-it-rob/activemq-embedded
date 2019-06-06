@@ -19,16 +19,16 @@ import javax.jms.ConnectionFactory;
 import javax.jms.Queue;
 
 /**
- * DefaultQueueTest tests sending plain text messages to the default message queue.
+ * DefaultQueueIT tests sending plain text messages to the default message queue.
  *
  * @author Rob Benton
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
-@TestPropertySource(DefaultQueueTest.TEST_PROPERTIES)
-public class DefaultQueueTest
+@TestPropertySource(DefaultQueueIT.TEST_PROPERTIES)
+public class DefaultQueueIT
 {
-    private static final Logger log = LoggerFactory.getLogger(DefaultQueueTest.class);
+    private static final Logger log = LoggerFactory.getLogger(DefaultQueueIT.class);
 
     static final String TEST_PROPERTIES = "classpath:test.properties";
 

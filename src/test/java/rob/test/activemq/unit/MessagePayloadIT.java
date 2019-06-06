@@ -21,17 +21,17 @@ import javax.jms.Queue;
 import java.util.Date;
 
 /**
- * MessagePayloadTest tests sending strongly-typed objects of {@link rob.test.activemq.model.MessagePayload}
+ * MessagePayloadIT tests sending strongly-typed objects of {@link rob.test.activemq.model.MessagePayload}
  * over a queue.
  *
  * @author Rob Benton
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration
-@TestPropertySource(MessagePayloadTest.TEST_PROPERTIES)
-public class MessagePayloadTest
+@TestPropertySource(MessagePayloadIT.TEST_PROPERTIES)
+public class MessagePayloadIT
 {
-    private static final Logger log = LoggerFactory.getLogger(MessagePayloadTest.class);
+    private static final Logger log = LoggerFactory.getLogger(MessagePayloadIT.class);
 
     static final String TEST_PROPERTIES = "classpath:test.properties";
 
