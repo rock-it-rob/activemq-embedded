@@ -5,7 +5,6 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
@@ -49,8 +48,7 @@ public class MessagePayloadIT
     private JmsTemplate jmsTemplate;
 
     @Autowired
-    @Qualifier("messagePayloadQueue")
-    private Queue queue;
+    private Queue messagePayloadQueue;
 
     @Test
     public void testConvertAndSend() throws Exception
@@ -59,12 +57,12 @@ public class MessagePayloadIT
         final MessagePayload messagePayload = new MessagePayload();
         messagePayload.setSent(new Date());
         messagePayload.setContent("Sample " + messagePayload.getClass().getName());
-        jmsTemplate.convertAndSend(queue, messagePayload);
+        jmsTemplate.convertAndSend(messagePayloadQueue, messagePayload);
     }
 
     @Test
     public void testBadMessage()
     {
-        jmsTemplate.send(queue, (session) -> session.createTextMessage("This is a bad message."));
+        jmsTemplate.send(messagePayloadQueue, (session) -> session.createTextMessage("This is a bad message."));
     }
 }

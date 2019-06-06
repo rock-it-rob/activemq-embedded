@@ -1,5 +1,6 @@
 package rob.test.activemq.it;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ import javax.jms.Message;
 import javax.jms.Queue;
 import java.util.Date;
 
+import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 @RunWith(SpringRunner.class)
@@ -52,11 +54,21 @@ public class MessagePayloadResponseIT
     @Autowired
     private Queue messagePayloadQueue;
 
+    @Autowired
+    private Queue messagePayloadOptionalResponseQueue;
+
+    private MessagePayload messagePayload;
+
+    @Before
+    public void before()
+    {
+        messagePayload = new MessagePayload();
+        messagePayload.setSent(new Date());
+    }
+
     @Test
     public void convertAndSend() throws JMSException
     {
-        final MessagePayload messagePayload = new MessagePayload();
-        messagePayload.setSent(new Date());
         messagePayload.setContent("Expecting response");
         final Message response = jmsTemplate.sendAndReceive(messagePayloadResponseQueue,
                 (session) ->
@@ -68,8 +80,6 @@ public class MessagePayloadResponseIT
     @Test
     public void sendExpectingResponseButGettingNone() throws JMSException
     {
-        final MessagePayload messagePayload = new MessagePayload();
-        messagePayload.setSent(new Date());
         messagePayload.setContent("Expecting response but won't get one.");
         final Message response = jmsTemplate.sendAndReceive(messagePayloadQueue,
                 (session) ->
@@ -77,6 +87,25 @@ public class MessagePayloadResponseIT
         );
         // response will be null.
         assertNull(response);
+    }
+
+    @Test
+    public void retrieveOptionalResponse() throws JMSException
+    {
+        messagePayload.setContent("Retrieving optional response");
+        final Message response = jmsTemplate.sendAndReceive(
+                messagePayloadOptionalResponseQueue,
+                (session) -> jmsTemplate.getMessageConverter().toMessage(messagePayload, session)
+        );
+        assertNotNull(response);
+        log.info("Optional response: " + parseResponse(response));
+    }
+
+    @Test
+    public void ignoreOptionalResponse()
+    {
+        messagePayload.setContent("Ignoring optional response");
+        jmsTemplate.convertAndSend(messagePayloadOptionalResponseQueue, messagePayload);
     }
 
     private String parseResponse(Message message) throws JMSException

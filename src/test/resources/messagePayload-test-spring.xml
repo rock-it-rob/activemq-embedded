@@ -15,6 +15,10 @@
         <property name="physicalName" value="${messagePayloadResponse.queue}"/>
     </bean>
 
+    <bean id="messagePayloadOptionalResponseQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <property name="physicalName" value="${messagePayloadOptionalResponse.queue}"/>
+    </bean>
+
     <!-- Converters -->
     <bean id="mappingJackson2MessageConverter"
           class="org.springframework.jms.support.converter.MappingJackson2MessageConverter">
@@ -26,12 +30,16 @@
 
     <bean id="messagePayloadResponseListener" class="rob.test.activemq.listener.MessagePayloadResponseListener"/>
 
+    <bean id="messagePayloadOptionalResponseListener"
+          class="rob.test.activemq.listener.MessagePayloadOptionalResponseListener"/>
+
     <bean id="messagePayloadListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
         <property name="delegate" ref="messagePayloadListener"/>
         <property name="messageConverter" ref="mappingJackson2MessageConverter"/>
     </bean>
 
-    <bean id="messagePayloadResponseListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+    <bean id="messagePayloadResponseListenerAdapter"
+          class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
         <property name="delegate" ref="messagePayloadResponseListener"/>
         <property name="defaultListenerMethod" value="handleMessageWithResponse"/>
         <property name="messageConverter" ref="mappingJackson2MessageConverter"/>
@@ -45,11 +53,20 @@
         <property name="errorHandler" ref="messagePayloadListener"/>
     </bean>
 
-    <bean id="messagePayloadResponseListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+    <bean id="messagePayloadResponseListenerContainer"
+          class="org.springframework.jms.listener.DefaultMessageListenerContainer">
         <property name="connectionFactory" ref="connectionFactory"/>
         <property name="destination" ref="messagePayloadResponseQueue"/>
         <property name="messageListener" ref="messagePayloadResponseListenerAdapter"/>
         <property name="errorHandler" ref="messagePayloadResponseListener"/>
+    </bean>
+
+    <bean id="messagePayloadOptionalResponseListenerContainer"
+          class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="destination" ref="messagePayloadOptionalResponseQueue"/>
+        <property name="messageListener" ref="messagePayloadOptionalResponseListener"/>
+        <property name="errorHandler" ref="messagePayloadOptionalResponseListener"/>
     </bean>
 
     <!-- JmsTemplates -->
@@ -57,6 +74,11 @@
         <property name="connectionFactory" ref="connectionFactory"/>
         <property name="messageConverter" ref="mappingJackson2MessageConverter"/>
         <property name="receiveTimeout" value="2000"/>
+    </bean>
+
+    <bean id="messagePayloadResponseJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="messageConverter" ref="mappingJackson2MessageConverter"/>
     </bean>
 
 </beans>
