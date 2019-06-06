@@ -25,19 +25,22 @@ the default queue.
 A JUnit test class that creates an instance of `MessagePayload` and
 sends it to a test queue.
 
-## Running the Application
+## Running the Application Tests
 
-The project is run by executing the maven test goal:
+### Setup
 
-`mvn test`
+The tests require a running ActiveMQ broker running on port 61616. This
+can be setup by using the included `docker-compose.yml` file if docker
+is installed. Or by using the maven profile `docker` when executing
+the verify goal.
 
-The result should look similar to the following:
+### Test Execution
 
-<pre>
-2019-06-03 15:54:01.385 [INFO] BrokerConfig: Received message: testing sample message
-2019-06-03 15:54:01.627 [ERROR] MessageErrorHandler: Could not find type id property [classname] on message [ID:MTI-ATPLT12-65380-1559595240927-7:1:5:1:1] from destination [queue://messagePayloadQueue]
-2019-06-03 15:54:01.698 [INFO] MessagePayloadQueueListener: MessagePayload / Sent: 2019-06-03 03:54:01.621 Content: Sample rob.test.activemq.model.MessagePayload
-2019-06-03 15:54:07.397 [WARN] DefaultMessageListenerContainer: Setup of JMS message listener invoker failed for destination 'defaultQueue' - trying to recover. Cause: peer (vm://localhost#3) stopped.
+Using docker-compose:
 
-Process finished with exit code 0
-</pre>
+`docker-compose up -d`
+`mvn verify`
+
+Using the docker maven plugin:
+
+`mvn -Pdocker verify`

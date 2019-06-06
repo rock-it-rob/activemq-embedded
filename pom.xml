@@ -70,61 +70,31 @@
     </dependencies>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>0.30.0</version>
+                    <configuration>
+                        <containerNamePattern>%a-%i</containerNamePattern>
+                        <images>
+                            <image>
+                                <alias>activemq</alias>
+                                <name>rmohr/activemq:5.15.6-alpine</name>
+                                <run>
+                                    <ports>
+                                        <port>61616:61616</port>
+                                        <port>8161:8161</port>
+                                    </ports>
+                                </run>
+                            </image>
+                        </images>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
-            <plugin>
-                <groupId>io.fabric8</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>0.30.0</version>
-                <configuration>
-                    <containerNamePattern>%a-%i</containerNamePattern>
-                    <images>
-                        <image>
-                            <alias>activemq</alias>
-                            <name>rmohr/activemq:5.15.6-alpine</name>
-                            <run>
-                                <ports>
-                                    <port>61616:61616</port>
-                                    <port>8161:8161</port>
-                                </ports>
-                            </run>
-                        </image>
-                    </images>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>pre-integration-test</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>start</goal>
-                        </goals>
-                        <configuration>
-                            <images>
-                                <image>
-                                    <alias>activemq</alias>
-                                    <run>
-                                        <wait>
-                                            <time>4</time>
-                                            <tcp>
-                                                <mode>mapped</mode>
-                                                <ports>
-                                                    <port>61616</port>
-                                                </ports>
-                                            </tcp>
-                                        </wait>
-                                    </run>
-                                </image>
-                            </images>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>post-integration-test</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
@@ -146,5 +116,58 @@
             </plugin>
         </plugins>
     </build>
+
+    <!--
+    The 'docker' profile will start and stop containers before and after the
+    integration tests.
+    -->
+    <profiles>
+        <profile>
+            <id>docker</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.30.0</version>
+                        <executions>
+                            <execution>
+                                <id>pre-integration-test</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                                <configuration>
+                                    <images>
+                                        <image>
+                                            <alias>activemq</alias>
+                                            <run>
+                                                <wait>
+                                                    <time>4</time>
+                                                    <tcp>
+                                                        <mode>mapped</mode>
+                                                        <ports>
+                                                            <port>61616</port>
+                                                        </ports>
+                                                    </tcp>
+                                                </wait>
+                                            </run>
+                                        </image>
+                                    </images>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>post-integration-test</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
