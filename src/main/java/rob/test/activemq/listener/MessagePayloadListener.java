@@ -9,9 +9,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 
-public class MessagePayloadQueueListener implements ErrorHandler
+public class MessagePayloadListener implements ErrorHandler
 {
-    private static final Logger log = LoggerFactory.getLogger(MessagePayloadQueueListener.class);
+    private static final Logger log = LoggerFactory.getLogger(MessagePayloadListener.class);
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
 
     public void handleMessage(final MessagePayload messagePayload)

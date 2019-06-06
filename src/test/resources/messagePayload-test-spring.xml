@@ -6,7 +6,7 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
 >
 
-    <bean id="messagePayloadQueueListener" class="rob.test.activemq.listener.MessagePayloadQueueListener"/>
+    <bean id="messagePayloadQueueListener" class="rob.test.activemq.listener.MessagePayloadListener"/>
 
     <bean id="mappingJackson2MessageConverter"
           class="org.springframework.jms.support.converter.MappingJackson2MessageConverter">
