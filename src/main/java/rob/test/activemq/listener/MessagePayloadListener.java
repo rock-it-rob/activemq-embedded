@@ -11,8 +11,9 @@ import java.text.SimpleDateFormat;
 
 public class MessagePayloadListener implements ErrorHandler
 {
-    private static final Logger log = LoggerFactory.getLogger(MessagePayloadListener.class);
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+    protected static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     public void handleMessage(final MessagePayload messagePayload)
     {
