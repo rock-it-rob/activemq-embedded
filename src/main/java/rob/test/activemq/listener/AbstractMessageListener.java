@@ -44,7 +44,10 @@ public abstract class AbstractMessageListener<M, R> implements SessionAwareMessa
 
     protected abstract void receiveMessage(M message);
 
-    protected abstract R generateReply(M message);
+    protected R generateReply(M message)
+    {
+        return null;
+    }
 
     public void setMessageConverter(MessageConverter messageConverter)
     {
