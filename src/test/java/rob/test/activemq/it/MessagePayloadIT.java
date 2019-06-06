@@ -1,4 +1,4 @@
-package rob.test.activemq.unit;
+package rob.test.activemq.it;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
