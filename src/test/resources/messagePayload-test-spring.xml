@@ -19,10 +19,8 @@
         <property name="physicalName" value="${messagePayloadOptionalResponse.queue}"/>
     </bean>
 
-    <!-- Converters -->
-    <bean id="mappingJackson2MessageConverter"
-          class="org.springframework.jms.support.converter.MappingJackson2MessageConverter">
-        <property name="typeIdPropertyName" value="classname"/>
+    <bean id="annotatedListenerQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <property name="physicalName" value="${annotatedListener.queue}"/>
     </bean>
 
     <!-- Listeners -->
