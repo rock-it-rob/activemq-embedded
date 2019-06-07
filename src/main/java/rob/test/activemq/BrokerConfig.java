@@ -2,6 +2,7 @@ package rob.test.activemq;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +11,10 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.annotation.JmsListener;
+import org.springframework.jms.annotation.JmsListenerConfigurer;
+import org.springframework.jms.config.JmsListenerEndpointRegistrar;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.handler.annotation.support.MessageHandlerMethodFactory;
 
 import javax.annotation.PostConstruct;
 
@@ -25,7 +29,7 @@ import javax.annotation.PostConstruct;
 @ImportResource(BrokerConfig.SPRING_XML)
 @PropertySource(BrokerConfig.PROPERTIES)
 @EnableJms
-public class BrokerConfig
+public class BrokerConfig implements JmsListenerConfigurer
 {
     static final String SPRING_XML = "classpath:broker-spring.xml";
     static final String PROPERTIES = "classpath:application.properties";
@@ -40,6 +44,9 @@ public class BrokerConfig
 
     @Value("${default.queue}")
     private String defaultQueueName;
+
+    @Autowired
+    private MessageHandlerMethodFactory messageHandlerMethodFactory;
 
     @PostConstruct
     private void postConstruct()
@@ -64,5 +71,11 @@ public class BrokerConfig
     public void onMessage(Message<String> message)
     {
         log.info("Received message: " + message.getPayload());
+    }
+
+    @Override
+    public void configureJmsListeners(JmsListenerEndpointRegistrar jmsListenerEndpointRegistrar)
+    {
+        jmsListenerEndpointRegistrar.setMessageHandlerMethodFactory(messageHandlerMethodFactory);
     }
 }

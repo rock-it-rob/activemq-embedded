@@ -1,5 +1,6 @@
 package rob.test.activemq.model;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -7,7 +8,9 @@ public class MessagePayload implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
+    @NotNull
     private Date sent;
+
     private String content;
 
     public Date getSent()

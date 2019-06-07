@@ -1,8 +1,12 @@
 package rob.test.activemq.it;
 
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +15,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.annotation.JmsListener;
+import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -21,6 +26,7 @@ import rob.test.activemq.BrokerConfig;
 import rob.test.activemq.model.MessagePayload;
 
 import javax.jms.ConnectionFactory;
+import javax.validation.Valid;
 import java.util.Date;
 
 @RunWith(SpringRunner.class)
@@ -28,6 +34,8 @@ import java.util.Date;
 @TestPropertySource(AnnotatedListenerIT.TEST_PROPERTIES)
 public class AnnotatedListenerIT
 {
+    private static final Logger log = LoggerFactory.getLogger(AnnotatedListenerIT.class);
+
     static final String TEST_PROPERTIES = "classpath:test.properties";
 
     @Configuration
@@ -41,10 +49,16 @@ public class AnnotatedListenerIT
         @Value("${annotatedListener.queue}")
         private String queueName;
 
+        @Autowired
+        private DefaultJmsListenerContainerFactory jmsListenerContainerFactory;
+
+        // Using the @Payload explicity on the method argument will cause an exception to be thrown
+        // if the object type is not in the message. Omitting this seems to prevent spring from
+        // matching a method to this listener.
         @JmsListener(destination = "${annotatedListener.queue}")
-        public void annotatedListener(@Payload MessagePayload messagePayload)
+        public void annotatedListener(@Payload @Valid MessagePayload messagePayload)
         {
-            System.out.println("Got a message: " + messagePayload.getContent());
+            log.info("Got a message: " + messagePayload.getContent());
         }
 
         @Bean
@@ -71,10 +85,31 @@ public class AnnotatedListenerIT
         messagePayload.setSent(new Date());
     }
 
+    @AfterClass
+    public static void afterClass() throws InterruptedException
+    {
+        Thread.sleep(2000);
+    }
+
     @Test
     public void send()
     {
         messagePayload.setContent("Just some stuff.");
+        testTemplate.convertAndSend(messagePayload);
+    }
+
+    @Ignore
+    @Test
+    public void sendBadContet()
+    {
+        testTemplate.convertAndSend("bad message");
+    }
+
+    @Test
+    public void sendInvalidPayload()
+    {
+        messagePayload.setSent(null);
+        messagePayload.setContent("This is an invalid object");
         testTemplate.convertAndSend(messagePayload);
     }
 }
