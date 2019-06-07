@@ -4,7 +4,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
@@ -17,7 +21,6 @@ import rob.test.activemq.BrokerConfig;
 import rob.test.activemq.model.MessagePayload;
 
 import javax.jms.ConnectionFactory;
-import javax.jms.Queue;
 import java.util.Date;
 
 @RunWith(SpringRunner.class)
@@ -29,13 +32,14 @@ public class AnnotatedListenerIT
 
     @Configuration
     @Import(BrokerConfig.class)
-    @ImportResource(Config.SPRING_XML)
     @PropertySource(Config.PROPERTIES)
     @EnableJms
     static class Config
     {
-        static final String SPRING_XML = "classpath:messagePayload-test-spring.xml";
         static final String PROPERTIES = "classpath:queue.properties";
+
+        @Value("${annotatedListener.queue}")
+        private String queueName;
 
         @JmsListener(destination = "${annotatedListener.queue}")
         public void annotatedListener(@Payload MessagePayload messagePayload)
@@ -49,6 +53,7 @@ public class AnnotatedListenerIT
         {
             JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
             jmsTemplate.setMessageConverter(messageConverter);
+            jmsTemplate.setDefaultDestinationName(queueName);
 
             return jmsTemplate;
         }
@@ -56,9 +61,6 @@ public class AnnotatedListenerIT
 
     @Autowired
     private JmsTemplate testTemplate;
-
-    @Autowired
-    private Queue annotatedListenerQueue;
 
     private MessagePayload messagePayload;
 
@@ -73,6 +75,6 @@ public class AnnotatedListenerIT
     public void send()
     {
         messagePayload.setContent("Just some stuff.");
-        testTemplate.convertAndSend(annotatedListenerQueue, messagePayload);
+        testTemplate.convertAndSend(messagePayload);
     }
 }
