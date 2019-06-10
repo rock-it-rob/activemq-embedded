@@ -18,7 +18,6 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.converter.MessageConverter;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -52,11 +51,8 @@ public class AnnotatedListenerIT
         @Autowired
         private DefaultJmsListenerContainerFactory jmsListenerContainerFactory;
 
-        // Using the @Payload explicity on the method argument will cause an exception to be thrown
-        // if the object type is not in the message. Omitting this seems to prevent spring from
-        // matching a method to this listener.
         @JmsListener(destination = "${annotatedListener.queue}")
-        public void annotatedListener(@Payload @Valid MessagePayload messagePayload)
+        public void annotatedListener(@Valid MessagePayload messagePayload)
         {
             log.info("Got a message: " + messagePayload.getContent());
         }
