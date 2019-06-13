@@ -39,6 +39,7 @@ the verify goal.
 Using docker-compose:
 
 `docker-compose up -d`
+
 `mvn verify`
 
 Using the docker maven plugin:
