@@ -1,18 +1,13 @@
 package rob.test.activemq.it;
 
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.*;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
@@ -24,6 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import rob.test.activemq.BrokerConfig;
 import rob.test.activemq.model.MessagePayload;
 
+import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 import javax.validation.Valid;
 import java.util.Date;
@@ -40,16 +36,27 @@ public class AnnotatedListenerIT
     @Configuration
     @Import(BrokerConfig.class)
     @PropertySource(Config.PROPERTIES)
+    @ImportResource(Config.SPRING_XML)
     @EnableJms
     static class Config
     {
         static final String PROPERTIES = "classpath:queue.properties";
+        static final String SPRING_XML = "classpath:messagePayload-test-spring.xml";
 
         @Value("${annotatedListener.queue}")
         private String queueName;
 
         @Autowired
         private DefaultJmsListenerContainerFactory jmsListenerContainerFactory;
+
+        @Autowired
+        private MessageConverter messageConverter;
+
+        @PostConstruct
+        private void postConstruct()
+        {
+            jmsListenerContainerFactory.setMessageConverter(messageConverter);
+        }
 
         @JmsListener(destination = "${annotatedListener.queue}")
         public void annotatedListener(@Valid MessagePayload messagePayload)
@@ -59,7 +66,7 @@ public class AnnotatedListenerIT
 
         @Bean
         @Autowired
-        public JmsTemplate testTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter)
+        public JmsTemplate testTemplate(ConnectionFactory connectionFactory)
         {
             JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
             jmsTemplate.setMessageConverter(messageConverter);
@@ -81,12 +88,6 @@ public class AnnotatedListenerIT
         messagePayload.setSent(new Date());
     }
 
-    @AfterClass
-    public static void afterClass() throws InterruptedException
-    {
-        Thread.sleep(2000);
-    }
-
     @Test
     public void send()
     {
@@ -94,7 +95,6 @@ public class AnnotatedListenerIT
         testTemplate.convertAndSend(messagePayload);
     }
 
-    @Ignore
     @Test
     public void sendBadContet()
     {

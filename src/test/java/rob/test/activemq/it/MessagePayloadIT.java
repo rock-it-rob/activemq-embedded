@@ -53,7 +53,6 @@ public class MessagePayloadIT
     @Test
     public void testConvertAndSend() throws Exception
     {
-
         final MessagePayload messagePayload = new MessagePayload();
         messagePayload.setSent(new Date());
         messagePayload.setContent("Sample " + messagePayload.getClass().getName());

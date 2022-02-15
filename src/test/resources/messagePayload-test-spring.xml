@@ -6,6 +6,12 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
 >
 
+    <!-- Converters -->
+    <bean id="mappingJackson2MessageConverter"
+          class="org.springframework.jms.support.converter.MappingJackson2MessageConverter">
+        <property name="typeIdPropertyName" value="classname"/>
+    </bean>
+
     <!-- Queues -->
     <bean id="messagePayloadQueue" class="org.apache.activemq.command.ActiveMQQueue">
         <property name="physicalName" value="${messagePayload.queue}"/>
