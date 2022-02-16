@@ -10,7 +10,7 @@ import javax.jms.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-public abstract class AbstractMessageListener<M, R> implements SessionAwareMessageListener, ErrorHandler
+public abstract class AbstractMessageListener<M, R> implements SessionAwareMessageListener<Message>, ErrorHandler
 {
     private MessageConverter messageConverter;
 
@@ -19,7 +19,7 @@ public abstract class AbstractMessageListener<M, R> implements SessionAwareMessa
     @Override
     public void onMessage(Message message, Session session) throws JMSException
     {
-        final M m = (M) messageConverter.fromMessage(message);
+        @SuppressWarnings("unchecked") final M m = (M) messageConverter.fromMessage(message);
         receiveMessage(m);
 
         final Destination destination = message.getJMSReplyTo();
