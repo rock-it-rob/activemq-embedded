@@ -85,7 +85,7 @@ public class MessagePayloadResponseIT
     }
 
     @Test
-    public void sendExpectingResponseButGettingNone() throws JMSException
+    public void sendExpectingResponseButGettingNone()
     {
         messagePayload.setContent("Expecting response but won't get one.");
         final Message response = jmsTemplate.sendAndReceive(messagePayloadQueue,

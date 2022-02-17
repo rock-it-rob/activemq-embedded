@@ -51,7 +51,7 @@ public class MessagePayloadIT
     private Queue messagePayloadQueue;
 
     @Test
-    public void testConvertAndSend() throws Exception
+    public void testConvertAndSend()
     {
         final MessagePayload messagePayload = new MessagePayload();
         messagePayload.setSent(new Date());
